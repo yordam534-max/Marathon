@@ -34,16 +34,28 @@ def init_db():
         )
     """)
     
-    # ESKI BALLARNI QAYTA TIKLASH (AVTOMATIK):
+    # RASMDAGI BARCHA ISHTIROKCHILAR VA ULARNING ANIQ BALLARI:
     old_data = [
-        (7177372974, 8),
+        (1237002760, 27),
+        (8122405379, 15),
+        (7177372974, 11),
+        (7212444863, 7),
+        (8605913622, 7),
         (7200690395, 4),
-        (7212444863, 4),
-        (8605913622, 3),
-        (8122405379, 2),
+        (7796513154, 3),
+        (7800663157, 3),
+        (8936217942, 3),
         (6864670979, 1),
         (7660504472, 1),
-        (7796513154, 1),
+        (1218616264, 0),
+        (1269914302, 0),
+        (1637147707, 0),
+        (1875633778, 0),
+        (1899099806, 0),
+        (2100908059, 0),
+        (5434733435, 0),
+        (5899230863, 0),
+        (6091435298, 0),
     ]
     for uid, pts in old_data:
         cursor.execute("""
@@ -159,12 +171,18 @@ async def send_ref_link(message: types.Message):
 
 @dp.message(F.text == "📊 Ballarim")
 async def show_points(message: types.Message):
+    if not await check_subscriptions(message.from_user.id):
+        await message.answer("Avval kanallarga a'zo bo'ling!", reply_markup=get_sub_keyboard())
+        return
     user = get_user(message.from_user.id)
     points = user[2] if user else 0
     await message.answer(f"Sizning joriy ballaringiz: **{points}** ball", parse_mode="Markdown")
 
 @dp.message(F.text == "🏆 Reyting (Top 20)")
 async def show_top(message: types.Message):
+    if not await check_subscriptions(message.from_user.id):
+        await message.answer("Avval kanallarga a'zo bo'ling!", reply_markup=get_sub_keyboard())
+        return
     top_users = get_top_users(20)
     text = "🏆 **Top-20 Ishtirokchilar:**\n\n"
     for idx, (u_id, pts) in enumerate(top_users, start=1):
@@ -173,6 +191,9 @@ async def show_top(message: types.Message):
 
 @dp.message(F.text == "🔒 Maxfiy kanal")
 async def secret_channel(message: types.Message):
+    if not await check_subscriptions(message.from_user.id):
+        await message.answer("Avval kanallarga a'zo bo'ling!", reply_markup=get_sub_keyboard())
+        return
     user = get_user(message.from_user.id)
     points = user[2] if user else 0
     if points >= 3:
