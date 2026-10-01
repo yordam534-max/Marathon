@@ -15,7 +15,10 @@ from aiogram.types import (
 # --- SOZLAMALAR ---
 TOKEN = "8160966086:AAHtslwDZd8zUjdhtjf7XCVYZEVSvUB4xxY"
 CHANNELS = ["@myjourneySAT", "@unitopuz"]
-PRIVATE_CHANNEL_LINK = "https://t.me/+example_private_link"
+
+# Yangi maxfiy guruh havolasi:
+PRIVATE_CHANNEL_LINK = "https://t.me/+goYEx8iHpSRiYzZi"
+
 PORT = int(os.environ.get("PORT", 8080))
 
 logging.basicConfig(level=logging.INFO)
