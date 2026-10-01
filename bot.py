@@ -15,10 +15,7 @@ from aiogram.types import (
 # --- SOZLAMALAR ---
 TOKEN = "8160966086:AAHtslwDZd8zUjdhtjf7XCVYZEVSvUB4xxY"
 CHANNELS = ["@myjourneySAT", "@unitopuz"]
-
-# Yangi maxfiy guruh havolasi:
 PRIVATE_CHANNEL_LINK = "https://t.me/+goYEx8iHpSRiYzZi"
-
 PORT = int(os.environ.get("PORT", 8080))
 
 logging.basicConfig(level=logging.INFO)
@@ -36,6 +33,24 @@ def init_db():
             points INTEGER DEFAULT 0
         )
     """)
+    
+    # ESKI BALLARNI QAYTA TIKLASH (AVTOMATIK):
+    old_data = [
+        (7177372974, 8),
+        (7200690395, 4),
+        (7212444863, 4),
+        (8605913622, 3),
+        (8122405379, 2),
+        (6864670979, 1),
+        (7660504472, 1),
+        (7796513154, 1),
+    ]
+    for uid, pts in old_data:
+        cursor.execute("""
+            INSERT INTO users (user_id, points) VALUES (?, ?)
+            ON CONFLICT(user_id) DO UPDATE SET points = MAX(points, ?)
+        """, (uid, pts, pts))
+
     conn.commit()
     conn.close()
 
@@ -122,7 +137,7 @@ async def process_check_sub(callback: types.CallbackQuery):
     user_id = callback.from_user.id
     if await check_subscriptions(user_id):
         user = get_user(user_id)
-        if user and user[1]:  # referrer_id mavjud bo'lsa
+        if user and user[1]:
             add_point(user[1])
             try:
                 await bot.send_message(user[1], "🎉 Siz taklif qilgan foydalanuvchi kanallarga a'zo bo'ldi! +1 ball.")
@@ -165,7 +180,6 @@ async def secret_channel(message: types.Message):
     else:
         await message.answer(f"Maxfiy kanalga kirish uchun kamida 3 ball kerak. Sizda hozir: {points} ball.")
 
-# --- BOSHQA BARCHA XABARLAR UCHUN JAVOB ---
 @dp.message()
 async def default_handler(message: types.Message):
     if not await check_subscriptions(message.from_user.id):
@@ -173,7 +187,7 @@ async def default_handler(message: types.Message):
     else:
         await message.answer("Iltimos, menyudagi tugmalardan birini tanlang yoki /start buyrug'ini yuboring.", reply_markup=get_main_keyboard())
 
-# --- RENDER PORT XATOSINI OLDI OLUVCHI VEB-SERVER ---
+# --- VEB-SERVER ---
 async def handle_ping(request):
     return web.Response(text="Bot runs smoothly!")
 
